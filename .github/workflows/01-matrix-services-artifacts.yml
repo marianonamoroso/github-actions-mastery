@@ -1,0 +1,96 @@
+# ==============================================================================
+# WORKFLOW: 01 - Matrix, Service Containers & Artifacts
+# DESCRIPTION: Parallel execution across Python versions and environments using
+#              ephemeral PostgreSQL service containers and artifact retention.
+# TARGET CERTIFICATION: GitHub Actions (GH-200) - Domain 1 & Domain 4
+# ==============================================================================
+
+name: "01 - Matrix, Service Containers & Artifacts"
+
+on:
+  workflow_dispatch: # Allows you to manually trigger a workflow on-demand via the GitHub UI, GitHub CLI, or GitHub API
+    inputs: # Allow you to pass runtime data into your workflows, reusable workflows, or custom actions
+      app_version:
+        description: "Application version to simulate"
+        required: true
+        default: "v1.0.0"
+      enable_debug:
+        description: "Enable debug mode"
+        type: boolean
+        default: false
+
+jobs:
+  test-and-build:
+    name: Test on Python ${{ matrix.python-version }} (${{ matrix.environment }})
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false # Ensures other matrix jobs continue even if one fails
+      matrix:
+        python-version: ["3.10", "3.11"]
+        environment: ["staging", "production"]
+        include: # Adds variables
+          - environment: "staging"
+            log_level: "DEBUG"
+          - environment: "production"
+            log_level: "INFO"
+
+    services: # Ephemeral PostgreSQL container attached to the runner network
+      postgres:
+        image: postgres:15-alpine
+        env:
+          POSTGRES_PASSWORD: supersecretpassword
+          POSTGRES_DB: test_db
+        ports:
+          - 5432:5432
+        options: >- # Health check to ensure PostgreSQL is ready before steps execute
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: "pip"
+
+      - name: Run App & Verify Database Connection
+        env:
+          POSTGRES_HOST: localhost
+          POSTGRES_PORT: 5432
+          APP_VERSION: ${{ inputs.app_version }}
+          ENV_NAME: ${{ matrix.environment }}
+          LOG_LEVEL: ${{ matrix.log_level }}
+        run: |
+          echo "Running tests on environment: $ENV_NAME with Log Level: $LOG_LEVEL"
+          python src/app.py
+
+      # Export variables between steps using $GITHUB_OUTPUT (Core Exam Topic)
+      - name: Set Job Outputs
+        id: step-outputs
+        run: |
+          TIMESTAMP=$(date +'%Y%m%d-%H%M%S')
+          echo "build_timestamp=$TIMESTAMP" >> $GITHUB_OUTPUT
+          echo "Calculated Timestamp: $TIMESTAMP"
+
+      - name: Upload Execution Report Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: report-${{ matrix.environment }}-py${{ matrix.python-version }}
+          path: report-${{ matrix.environment }}.txt
+          retention-days: 5 # FinOps best practice for retention limits
+
+  summary:
+    name: Consolidated Summary
+    needs: test-and-build # Sequential Job Dependency
+    runs-on: ubuntu-latest
+    steps:
+      - name: Print Final Status
+        run: |
+          echo "All matrix jobs completed successfully."
+          echo "Tested Version: ${{ inputs.app_version }}"
