@@ -7,7 +7,7 @@
 
 name: "01 - Matrix, Service Containers & Artifacts"
 
-on:
+on: # WHEN RUN?
   workflow_dispatch: # Allows you to manually trigger a workflow on-demand via the GitHub UI, GitHub CLI, or GitHub API
     inputs: # Allow you to pass runtime data into your workflows, reusable workflows, or custom actions
       app_version:
@@ -22,9 +22,9 @@ on:
 jobs:
   test-and-build:
     name: Test on Python ${{ matrix.python-version }} (${{ matrix.environment }})
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest # WHERE RUN?
 
-    strategy:
+    strategy: # RESOURCE
       fail-fast: false # Ensures other matrix jobs continue even if one fails
       matrix:
         python-version: ["3.10", "3.11"]
@@ -35,8 +35,8 @@ jobs:
           - environment: "production"
             log_level: "INFO"
 
-    services: # Ephemeral PostgreSQL container attached to the runner network
-      postgres:
+    services: # RESOURCE# 
+      postgres: # Ephemeral PostgreSQL container attached to the runner network
         image: postgres:15-alpine
         env:
           POSTGRES_PASSWORD: supersecretpassword
@@ -49,7 +49,7 @@ jobs:
           --health-timeout 5s
           --health-retries 5
 
-    steps:
+    steps: # STEP-BY-STEP
       - name: Checkout Repository
         uses: actions/checkout@v4
 
