@@ -70,8 +70,7 @@ jobs:
           echo "Running tests on environment: $ENV_NAME with Log Level: $LOG_LEVEL"
           python src/app.py
 
-      # Export variables between steps using $GITHUB_OUTPUT (Core Exam Topic)
-      - name: Set Job Outputs
+      - name: Set Job Outputs # Export variables between steps using $GITHUB_OUTPUT (Core Exam Topic)
         id: step-outputs
         run: |
           TIMESTAMP=$(date +'%Y%m%d-%H%M%S')
