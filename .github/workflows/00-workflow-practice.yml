@@ -25,6 +25,6 @@ jobs: # tasks going to execute
     steps:
       - uses: actions/hello-world-javascript-action@v1.1 # uses a public action
         with:
-          who-to-greet: "Helo JS"
+          who-to-greet: "JS"
         name: "Task JS" # task name
         id: "task-3" # task_id
