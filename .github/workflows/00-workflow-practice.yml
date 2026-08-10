@@ -1,0 +1,16 @@
+name: Practice GitHub Actions Core Features # workflow visible name
+
+on: #workflow_dispatch, push, pull_request OR schedule
+  workflow_dispatch: # manual
+
+jobs: # tasks going to execute
+  hello-bash: # job_id
+    runs-on: ubuntu-24.04 # OS runner
+    #needs: [] dependencies
+    #strategy: matrix
+    #services: DBs & cache
+    steps: # list tasks
+      - name: "Task 1" # task name
+        id: "task-1" # task_id
+        run: echo "Hello World" # command execution 
+    
