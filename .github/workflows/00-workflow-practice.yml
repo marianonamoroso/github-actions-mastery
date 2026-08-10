@@ -22,9 +22,12 @@ jobs: # tasks going to execute
         shell: python
   hello-js: # job_id
     runs-on: ubuntu-24.04 # OS runner
+    needs: 
+      - hello-python
     steps:
       - uses: actions/hello-world-javascript-action@v1.1 # uses a public action
         with:
           who-to-greet: "JS"
         name: "Task JS" # task name
         id: "task-3" # task_id
+
