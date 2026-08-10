@@ -1,4 +1,4 @@
-name: Practice GitHub Actions Core Features # workflow visible name
+name: "00 - Practice GitHub Actions Core Features" # workflow visible name
 
 on: #workflow_dispatch, push, pull_request OR schedule
   workflow_dispatch: # manual
