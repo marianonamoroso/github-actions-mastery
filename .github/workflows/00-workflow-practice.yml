@@ -4,13 +4,27 @@ on: #workflow_dispatch, push, pull_request OR schedule
   workflow_dispatch: # manual
 
 jobs: # tasks going to execute
-  hello-bash: # job_id
-    runs-on: ubuntu-24.04 # OS runner
     #needs: [] dependencies
     #strategy: matrix
     #services: DBs & cache
+  hello-bash: # job_id
+    runs-on: ubuntu-24.04 # OS runner
     steps: # list tasks
-      - name: "Task 1" # task name
+      - name: "Task Bash" # task name
         id: "task-1" # task_id
-        run: echo "Hello World" # command execution 
-    
+        run: echo "Hello Shell" # command execution 
+  hello-python: # job_id
+    runs-on: ubuntu-24.04 # OS runner
+    steps:
+      - name: "Task Python" # task name
+        id: "task-2" # task_id
+        run: print("Hello Python") # command execution 
+        shell: python
+  hello-js: # job_id
+    runs-on: ubuntu-24.04 # OS runner
+    steps:
+      - uses: actions/hello-world-javascript-action@v1.1 # uses a public action
+        with:
+          who-to-greet: "Helo JS"
+        name: "Task JS" # task name
+        id: "task-3" # task_id
