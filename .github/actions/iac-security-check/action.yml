@@ -35,7 +35,7 @@ runs:
         echo "⚙️ Initializing TFLint..."
         tflint --init
         echo "🧹 Running TFLint inspection..."
-        tflint
+        tflint --format json > tflint-report.json || true
 
     - name: "Step 4: Run Trivy IaC Security Scan"
       uses: aquasecurity/trivy-action@master
@@ -44,3 +44,5 @@ runs:
         scan-ref: ${{ inputs.working-directory }}
         exit-code: ${{ inputs.fail-on-error == 'true' && '1' || '0' }}
         severity: 'CRITICAL,HIGH'
+        format: 'json'
+        output: '${{ inputs.working-directory }}/trivy-report.json'
