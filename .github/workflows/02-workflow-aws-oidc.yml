@@ -1,4 +1,10 @@
-name: "01 - AWS Authentication via OIDC"
+# ==============================================================================
+# WORKFLOW: Zero-Trust AWS Auth via OIDC
+# DESCRIPTION: OpenID Connect, JWT Claims, IAM Trust Policies, Least Privilege, 
+#              Passwordless CI/CD.
+# TARGET CERTIFICATION: GitHub Actions (GH-200) - Domain 2 & Domain 3
+# ==============================================================================
+name: "02 - AWS Authentication via OIDC"
 
 on: 
   workflow_dispatch: # manual
