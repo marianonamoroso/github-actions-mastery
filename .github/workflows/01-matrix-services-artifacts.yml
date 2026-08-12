@@ -5,7 +5,7 @@
 # TARGET CERTIFICATION: GitHub Actions (GH-200) - Domain 1 & Domain 4
 # ==============================================================================
 
-name: "10 - Matrix, Service Containers & Artifacts"
+name: "01 - Matrix, Service Containers & Artifacts"
 
 on: # WHEN RUN?
   workflow_dispatch: # Allows you to manually trigger a workflow on-demand via the GitHub UI, GitHub CLI, or GitHub API
