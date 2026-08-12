@@ -1,6 +1,6 @@
 name: "00 - Practice Core Features" # workflow visible name
 
-on: #workflow_dispatch, push, pull_request OR schedule
+on: #workflow_dispatch, push, pull_request OR schedule/cron
   workflow_dispatch: # manual
 
 jobs: # tasks going to execute
