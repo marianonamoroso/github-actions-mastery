@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     
     env:
-      WORKING_DIR: "labs/03-iac-security"
+      WORKING_DIR: "labs/03-iac-security-check"
 
     steps:
       - name: "Checkout Repository"
