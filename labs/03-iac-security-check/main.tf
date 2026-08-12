@@ -1,3 +1,13 @@
+terraform {
+  required_version = ">= 1.5.0"
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 5.0"
+    }
+  }
+}
+
 # 1. Create the S3 Bucket
 resource "aws_s3_bucket" "unsecure_bucket" {
   bucket = "lab03-iac-unsecure-bucket"
