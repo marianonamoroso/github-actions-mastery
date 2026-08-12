@@ -1,16 +1,20 @@
 # ==============================================================================
-# WORKFLOW: XXXX
-# DESCRIPTION: XXXXX.
-# TARGET CERTIFICATION: GitHub Actions (GH-200) - Domain  & Domain 
+# WORKFLOW: 03 - Custom Composite Action (IaC Security Check)
+# DESCRIPTION: Test harness for the custom IaC security scanner composite action.
+# TARGET CERTIFICATION: GitHub Actions (GH-200) - Domain 1 (Workflows) & Domain 4 (Security)
 # ==============================================================================
 name: "03 - Custom Composite Action (IaC Security Check)"
 
 on: 
-  workflow_dispatch: # manual
+  workflow_dispatch:
 
 jobs:
   IaCSecurityScan:
     runs-on: ubuntu-latest
+    
+    env:
+      WORKING_DIR: "labs/03-iac-security"
+
     steps:
       - name: "Checkout Repository"
         uses: actions/checkout@v4
@@ -18,5 +22,15 @@ jobs:
       - name: "Run Custom IaC Security Composite Action"
         uses: ./.github/actions/iac-security-check
         with:
-          working-directory: "labs/03-iac-security-check"
-          fail-on-error: "false" 
+          working-directory: ${{ env.WORKING_DIR }}
+          fail-on-error: "false"
+
+      - name: "Upload Security Reports as Artifacts"
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: iac-security-reports
+          path: |
+            ${{ env.WORKING_DIR }}/tflint-report.json
+            ${{ env.WORKING_DIR }}/trivy-report.json
+          retention-days: 7
