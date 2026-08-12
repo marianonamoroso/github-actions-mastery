@@ -1,33 +1,21 @@
-name: "00 - Practice Core Features" # workflow visible name
+name: "01 - AWS Authentication via OIDC"
 
-on: #workflow_dispatch, push, pull_request OR schedule/cron
+on: 
   workflow_dispatch: # manual
 
-jobs: # tasks going to execute
-    #needs: [] dependencies
-    #strategy: matrix
-    #services: DBs & cache
-  hello-bash: # job_id
-    runs-on: ubuntu-24.04 # OS runner
-    steps: # list tasks
-      - name: "Task Bash" # task name
-        id: "task-1" # task_id
-        run: echo "Hello Shell" # command execution 
-  hello-python: # job_id
-    runs-on: ubuntu-24.04 # OS runner
+permissions:
+  id-token: write # GitHub Actions generates Web Identity Token (JWT)
+  contents: read # GitHub reads repos
+
+jobs:
+  AssumeRoleJob:
+    runs-on: ubuntu-latest
     steps:
-      - name: "Task Python" # task name
-        id: "task-2" # task_id
-        run: print("Hello Python") # command execution 
-        shell: python
-  hello-js: # job_id
-    runs-on: ubuntu-24.04 # OS runner
-    needs: 
-      - hello-python
-    steps:
-      - uses: actions/hello-world-javascript-action@v1.1 # uses a public action
+      - name: "Configure AWS Credentials"
+        uses: aws-actions/configure-aws-credentials@v4
         with:
-          who-to-greet: "JS"
-        name: "Task JS" # task name
-        id: "task-3" # task_id
+          role-to-assume: ${{ vars.ARN_AWS_ROLE_OIDC}}
+          aws-region: us-east-1
+      - name: "Test AWS STS"
+        run: aws sts get-caller-identity
 
