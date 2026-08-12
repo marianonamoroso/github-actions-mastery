@@ -18,5 +18,5 @@ jobs:
       - name: "Run Custom IaC Security Composite Action"
         uses: ./.github/actions/iac-security-check
         with:
-          working-directory: "labs/03-iac-security"
+          working-directory: "labs/03-iac-security-check"
           fail-on-error: "false" 
