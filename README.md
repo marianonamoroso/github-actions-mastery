@@ -8,7 +8,7 @@ This repository serves as a hands-on technical portfolio and study guide for the
 
 | ID | Topic / Core Domain | Technical Concepts | Paths & Artifacts |
 | :--- | :--- | :--- | :--- |
-| **01** | **Matrix, Services & Artifacts** *(Domain 1 & 4)* | Parallel Matrices, PostgreSQL Service Containers, `$GITHUB_OUTPUT`, Artifact Retention | [Workflow](.github/workflows/01-matrix-services-artifacts.yml) \| [Code](src/app.py) |
+| **01** | **Matrix, Services & Artifacts** *(Domain 1 & 4)* | Parallel Matrices, PostgreSQL Service Containers, `$GITHUB_OUTPUT`, Artifact Retention | [Workflow](.github/workflows/01-matrix-services-artifacts.yml) \| [Code](labs/01-matrix-services/src/app.py) |
 | **02** | **Zero-Trust AWS Auth via OIDC** *(Domain 2 & 3)* | OpenID Connect, JWT Claims, IAM Trust Policies, Least Privilege, Passwordless CI/CD | [Workflow](.github/workflows/02-workflow-aws-oidc.yml) \| [Labs](labs/02-aws-oidc/) |
 
 ---

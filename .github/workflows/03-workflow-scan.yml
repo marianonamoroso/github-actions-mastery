@@ -1,0 +1,22 @@
+# ==============================================================================
+# WORKFLOW: XXXX
+# DESCRIPTION: XXXXX.
+# TARGET CERTIFICATION: GitHub Actions (GH-200) - Domain  & Domain 
+# ==============================================================================
+name: "03 - Custom Composite Action (IaC Security Check)"
+
+on: 
+  workflow_dispatch: # manual
+
+jobs:
+  IaCSecurityScan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Checkout Repository"
+        uses: actions/checkout@v4
+
+      - name: "Run Custom IaC Security Composite Action"
+        uses: ./.github/actions/iac-security-check
+        with:
+          working-directory: "labs/03-iac-security"
+          fail-on-error: "false" 

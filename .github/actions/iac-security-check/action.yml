@@ -1,0 +1,46 @@
+# ==============================================================================
+# Composite Action
+# ==============================================================================
+name: "IaC Security & Quality Scanner"
+description: "Standardize security scanning and linting for Terraform code."
+
+inputs:
+  working-directory:
+    description: "Directory containing Terraform code to analyze"
+    required: false
+    default: "."
+  fail-on-error:
+    description: "Fail the build if vulnerabilities or errors are detected"
+    required: false
+    default: "true"
+
+runs:
+  using: "composite"
+  steps:
+    - name: "Step 1: Check Target Environment"
+      shell: bash
+      run: |
+        echo "🔍 Target directory: ${{ inputs.working-directory }}"
+        echo "🛡️ Fail on error: ${{ inputs.fail-on-error }}"
+
+    - name: "Step 2: Setup TFLint"
+      uses: terraform-linters/setup-tflint@v4
+      with:
+        tflint_version: latest
+
+    - name: "Step 3: Run TFLint"
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+      run: |
+        echo "⚙️ Initializing TFLint..."
+        tflint --init
+        echo "🧹 Running TFLint inspection..."
+        tflint
+
+    - name: "Step 4: Run Trivy IaC Security Scan"
+      uses: aquasecurity/trivy-action@master
+      with:
+        scan-type: 'config'
+        scan-ref: ${{ inputs.working-directory }}
+        exit-code: ${{ inputs.fail-on-error == 'true' && '1' || '0' }}
+        severity: 'CRITICAL,HIGH'
