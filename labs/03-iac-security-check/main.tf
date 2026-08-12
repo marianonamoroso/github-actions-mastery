@@ -1,6 +1,6 @@
 # 1. Create the S3 Bucket
 resource "aws_s3_bucket" "unsecure_bucket" {
-  bucket = "lab03-scan-bucket"
+  bucket = "lab03-iac-unsecure-bucket"
 }
 
 # 2. Allow all public access 
