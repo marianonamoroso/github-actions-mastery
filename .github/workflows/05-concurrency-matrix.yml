@@ -1,0 +1,54 @@
+# ==============================================================================
+# WORKFLOW: 05 - Concurrency Controls, Dynamic Matrix & Self-Hosted Architecture
+# DESCRIPTION: Implements active cancellation of redundant workflow runs, 
+#              resilient matrix strategies (fail-fast: false), and multi-OS execution.
+# TARGET CERTIFICATION: GitHub Actions (GH-200) - Domain 1 (Authoring & Managing Workflows) 
+#                                               & Domain 2 (Managing Workflows for Enterprise)
+# ==============================================================================
+name: "05 - Concurrency & Dynamic Matrix"
+
+on: 
+  workflow_dispatch: 
+  push:
+    branches:
+      - main
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  MatrixTest:
+    name: "Matrix (${{ matrix.os }} - Py ${{ matrix.python-version }})"
+    runs-on: ${{ matrix.os }}
+    
+    strategy:
+      fail-fast: false # Ensures other matrix jobs continue even if one fails
+      max-parallel: 2 # Limits on simultaneous parallelism
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        python-version: ["3.10", "3.11"]
+        exclude:
+          - os: windows-latest
+            python-version: "3.10"
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Check Environment Info
+        run: |
+          echo "🚀 Running on OS: ${{ matrix.os }}"
+          echo "🐍 Python Version: ${{ matrix.python-version }}"
+          python --version
+      
+      - name: Simulate Heavy Task (To test concurrency cancellation)
+        shell: bash
+        run: |
+          echo "⏳ Simulating long task... (sleeping 20s)"
+          sleep 20
