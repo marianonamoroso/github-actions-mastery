@@ -1,0 +1,30 @@
+name: "04 - Caller Workflow"
+
+on:
+  workflow_dispatch:
+    inputs:
+      app-name:
+        description: "Application name"
+        required: true
+        default: "mna-service"
+
+jobs:
+  DeployStaging:
+    uses: ./.github/workflows/04-reusable-cd.yml
+    with:
+      app-name: ${{ inputs.app-name }}
+      environment: staging
+    secrets: inherit
+
+  DeployProduction:
+    needs: DeployStaging
+    uses: ./.github/workflows/04-reusable-cd.yml
+    with:
+      app-name: ${{ inputs.app-name }}
+      environment: production
+    secrets: inherit
+    
+
+  
+
+ 

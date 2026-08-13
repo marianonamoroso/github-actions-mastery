@@ -12,32 +12,32 @@ on:
         required: true
         type: string
 
+    secrets:
+      LAB04_SECRET_DEPLOY_TOKEN:
+        description: "Secret token required for deployment"
+        required: true
+
 
 jobs:
-  PrintAppName:
+  PrintAndValidateApps:
       runs-on: ubuntu-latest
+      environment: ${{ inputs.environment }}
 
       steps:
-        # - name: "Checkout Repository"
-        #   uses: actions/checkout@v4
-
-        - name: Print the app name
-          id: "task-app-name"
-          run: echo 'The username is ${{ inputs.app-name }}'
-
-        
-        - name: Print the environment
-          id: "task-app-env"
-          run: echo 'Environment is ${{ inputs.environment }}''
+        - name: Validate & Display Deployment Info
+          run: |
+            echo "🚀 Deploying Application: ${{ inputs.app-name }}"
+            echo "🌍 Target Environment: ${{ inputs.environment }}"
 
         - name: Validate DEPLOY_TOKEN
           env:
             DEPLOY_TOKEN: ${{ secrets.LAB04_SECRET_DEPLOY_TOKEN }}
           run: |
             if [ -z "$DEPLOY_TOKEN" ]; then
-              echo "Error: DEPLOY_TOKEN secret is not set."
+              echo "❌ Error: DEPLOY_TOKEN secret is not set."
               exit 1
             fi
+            echo "✅ DEPLOY_TOKEN verified successfully."
 
         
 
