@@ -60,6 +60,7 @@ jobs:
           #cache: "pip"
 
       - name: Run App & Verify Database Connection
+        working-directory: labs/01-matrix-services
         env:
           POSTGRES_HOST: localhost
           POSTGRES_PORT: 5432
