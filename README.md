@@ -12,6 +12,7 @@ This repository serves as a hands-on technical portfolio and study guide for the
 | **02** | **Zero-Trust AWS Auth via OIDC** *(Domain 2 & 3)* | OpenID Connect, JWT Claims, IAM Trust Policies, Least Privilege, Passwordless CI/CD | [Workflow](.github/workflows/02-workflow-aws-oidc.yml) \| [Labs](labs/02-aws-oidc/) |
 | **03** | **Custom Composite Action (IaC Security & Quality)** *(Domain 1 & 4)* | Composite Actions (`action.yml`), TFLint, Trivy SAST, Centralized `env`/`vars`, Artifact Retention | [Workflow](.github/workflows/03-workflow-scan.yml) \| [Labs](labs/03-iac-security-check/) |
 | **04** | **Reusable Workflows & CD Environments** *(Domain 1, 2 & 3)* | `workflow_call`, Caller vs Callable, `secrets: inherit`, GitHub Environments & Manual Protection Rules | [Workflow Invocador](.github/workflows/04-workflow-cd-pipeline.yml) \| [Reusable](.github/workflows/04-reusable-cd.yml) \| [Lab](labs/04-reusable-cd/) |
+
 ---
 
 ## 01 - Matrix Strategies, Service Containers & Artifacts
@@ -19,6 +20,22 @@ This repository serves as a hands-on technical portfolio and study guide for the
 ### 🎯 Business Challenge
 We need to validate a Python application against multiple runtime versions (`3.10` and `3.11`) across operational environments (`staging` and `production`). The execution requires an active PostgreSQL database instance to verify connectivity and must persist execution logs as audit artifacts without polluting the runner host.
 
+### 🛠️ Workflow Architecture
+
+```text
+┌────────────────────────────────────────────────────────────────────────┐
+│                     Matrix Execution (4 Jobs)                          │
+│                                                                        │
+│  [Python 3.10 / Staging] ───┐                                          │
+│  [Python 3.10 / Prod]    ───┼──► Local Postgres Container (Port 5432)   │
+│  [Python 3.11 / Staging] ───┤           │                              │
+│  [Python 3.11 / Prod]    ───┘           ▼                              │
+│                                Execute App & Persistence               │
+│                                         │                              │
+│                                         ▼                              │
+│                           Upload Artifacts (Zip Log)                   │
+└────────────────────────────────────────────────────────────────────────┘
+```
 ---
 
 ## 02 - Zero-Trust AWS Authentication via OpenID Connect (OIDC)
@@ -28,7 +45,17 @@ Storing long-lived static cloud credentials (`AWS_ACCESS_KEY_ID` and `AWS_SECRET
 
 ### 🛠️ Architecture & Workflow Overview
 Instead of exchanging fixed secrets, the GitHub runner requests a short-lived JSON Web Token (JWT) from GitHub's OIDC Provider. AWS Security Token Service (STS) validates the token against a strict IAM Trust Policy and exchanges it for temporary AWS security credentials.
-
+```text
+┌────────────────────────────────────────────────────────────────────────┐
+│                         OIDC Authentication Flow                       │
+│                                                                        │
+│  1. Runner ──► Request OIDC Token ──► GitHub OIDC Provider             │
+│  2. GitHub OIDC ──► Issues Signed JWT Token ──► Runner                 │
+│  3. Runner ──► Present JWT to AWS STS (AssumeRoleWithWebIdentity)     │
+│  4. AWS STS ──► Validates JWT with IAM Trust Policy                    │
+│  5. AWS STS ──► Issues Temporary Security Credentials ──► Runner       │
+└────────────────────────────────────────────────────────────────────────┘
+```
 ---
 
 ## 03 - Custom Composite Action (IaC Security & Quality Scanner)
@@ -38,6 +65,19 @@ As Infrastructure-as-Code (IaC) adoption scales across multiple development team
 
 ### 🛠️ Action & Workflow Architecture
 The custom action encapsulates `tflint` (for syntax/provider quality) and `trivy` (for misconfiguration scanning) into a single reusable module (`action.yml`). Workflows consume it by passing input parameters like `working-directory` and `fail-on-error`.
+
+```text
+┌────────────────────────────────────────────────────────────────────────┐
+│                        Workflow Execution                              │
+│                                                                        │
+│  1. Checkout Code ──► 2. Run Composite Action (./.github/actions)      │
+│                              │                                         │
+│                              ├─► Step A: Setup & Exec TFLint (JSON)    │
+│                              └─► Step B: Exec Trivy Scan (JSON)        │
+│                              │                                         │
+│                       3. Upload Reports as Artifacts (v4)              │
+└────────────────────────────────────────────────────────────────────────┘
+```
 
 ---
 
@@ -61,3 +101,4 @@ We decouple the orchestration logic (Caller Workflow) from the execution logic (
 │                                   │                │                   │
 │                                   │     [Requires Manual Gate]         │
 └────────────────────────────────────────────────────────────────────────┘
+```
