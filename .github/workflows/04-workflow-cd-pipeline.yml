@@ -6,7 +6,7 @@
 # TARGET CERTIFICATION: GitHub Actions (GH-200) - Domain 1 (Authoring & Managing Workflows) 
 #                                               & Domain 2 (Managing Workflows for Enterprise)
 # ==============================================================================
-name: "04 - CD Pipeline Orchestrator (Caller Workflow)"
+name: "04 - Caller Workflow Pipeline"
 
 on:
   workflow_dispatch:
