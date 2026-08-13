@@ -11,7 +11,7 @@ This repository serves as a hands-on technical portfolio and study guide for the
 | **01** | **Matrix, Services & Artifacts** *(Domain 1 & 4)* | Parallel Matrices, PostgreSQL Service Containers, `$GITHUB_OUTPUT`, Artifact Retention | [Workflow](.github/workflows/01-matrix-services-artifacts.yml) \| [Code](labs/01-matrix-services/src/app.py) |
 | **02** | **Zero-Trust AWS Auth via OIDC** *(Domain 2 & 3)* | OpenID Connect, JWT Claims, IAM Trust Policies, Least Privilege, Passwordless CI/CD | [Workflow](.github/workflows/02-workflow-aws-oidc.yml) \| [Labs](labs/02-aws-oidc/) |
 | **03** | **Custom Composite Action (IaC Security & Quality)** *(Domain 1 & 4)* | Composite Actions (`action.yml`), TFLint, Trivy SAST, Centralized `env`/`vars`, Artifact Retention | [Workflow](.github/workflows/03-workflow-scan.yml) \| [Labs](labs/03-iac-security-check/) |
-
+| **04** | **Reusable Workflows & CD Environments** *(Domain 1, 2 & 3)* | `workflow_call`, Caller vs Callable, `secrets: inherit`, GitHub Environments & Manual Protection Rules | [Workflow Invocador](.github/workflows/04-workflow-cd-pipeline.yml) \| [Reusable](.github/workflows/04-reusable-cd.yml) \| [Lab](labs/04-reusable-cd/) |
 ---
 
 ## 01 - Matrix Strategies, Service Containers & Artifacts
@@ -38,3 +38,26 @@ As Infrastructure-as-Code (IaC) adoption scales across multiple development team
 
 ### 🛠️ Action & Workflow Architecture
 The custom action encapsulates `tflint` (for syntax/provider quality) and `trivy` (for misconfiguration scanning) into a single reusable module (`action.yml`). Workflows consume it by passing input parameters like `working-directory` and `fail-on-error`.
+
+---
+
+## 04 - Reusable Workflows & CD Environments
+
+### 🎯 Business Challenge
+To prevent drift, bypass of approval processes, and duplication across application deployment pipelines, we need a centralized, standard CD template. This pipeline must automatically deploy to `staging` upon passing checks, but require a mandatory manual approval gate before promoting changes to `production`.
+
+### 🛠️ Workflow Architecture
+We decouple the orchestration logic (Caller Workflow) from the execution logic (Reusable Workflow).
+
+```text
+┌────────────────────────────────────────────────────────────────────────┐
+│                        04-workflow-cd-pipeline.yml                     │
+│                                (Caller)                                │
+│                                   │                                    │
+│  1. Job: DeployStaging ───────────┼───► 04-reusable-cd.yml             │
+│                                   │     (environment: staging)         │
+│  2. Job: DeployProduction ────────┼───► 04-reusable-cd.yml             │
+│     (needs: DeployStaging)        │     (environment: production)      │
+│                                   │                │                   │
+│                                   │     [Requires Manual Gate]         │
+└────────────────────────────────────────────────────────────────────────┘

@@ -1,4 +1,12 @@
-name: "04 - Caller Workflow"
+# ==============================================================================
+# WORKFLOW: 04 - CD Pipeline Orchestrator (Caller Workflow)
+# DESCRIPTION: Orchestrates multi-environment Continuous Delivery (Staging -> Production)
+#              by invoking a reusable workflow with sequential dependencies (needs)
+#              and environment-bound approval gates.
+# TARGET CERTIFICATION: GitHub Actions (GH-200) - Domain 1 (Authoring & Managing Workflows) 
+#                                               & Domain 2 (Managing Workflows for Enterprise)
+# ==============================================================================
+name: "04 - CD Pipeline Orchestrator (Caller Workflow)"
 
 on:
   workflow_dispatch:
