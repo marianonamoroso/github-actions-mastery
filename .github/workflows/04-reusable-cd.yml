@@ -1,0 +1,43 @@
+name: "04 - Reusable Workflow"
+
+on:
+  workflow_call:
+    inputs:
+      app-name:
+        description: "The name of the app"
+        required: true
+        type: string
+      environment:
+        description: "A env passed from the caller workflow"
+        required: true
+        type: string
+
+
+jobs:
+  PrintAppName:
+      runs-on: ubuntu-latest
+
+      steps:
+        # - name: "Checkout Repository"
+        #   uses: actions/checkout@v4
+
+        - name: Print the app name
+          id: "task-app-name"
+          run: echo 'The username is ${{ inputs.app-name }}'
+
+        
+        - name: Print the environment
+          id: "task-app-env"
+          run: echo 'Environment is ${{ inputs.environment }}''
+
+        - name: Validate DEPLOY_TOKEN
+          env:
+            DEPLOY_TOKEN: ${{ secrets.LAB04_SECRET_DEPLOY_TOKEN }}
+          run: |
+            if [ -z "$DEPLOY_TOKEN" ]; then
+              echo "Error: DEPLOY_TOKEN secret is not set."
+              exit 1
+            fi
+
+        
+
