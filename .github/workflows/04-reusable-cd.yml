@@ -6,7 +6,7 @@
 # TARGET CERTIFICATION: GitHub Actions (GH-200) - Domain 1 (Authoring & Managing Workflows) 
 #                                               & Domain 3 (Reusability & Extensibility)
 # ==============================================================================
-name: "04 - Reusable Workflow"
+name: "04 - Reusable CD Template (Callable Workflow)"
 
 on:
   workflow_call:
