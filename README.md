@@ -91,8 +91,8 @@ We decouple the orchestration logic (Caller Workflow) from the execution logic (
 
 ```text
 ┌────────────────────────────────────────────────────────────────────────┐
-│                        04-workflow-cd-pipeline.yml                     │
-│                                (Caller)                                │
+│                        Caller Workflow                                 |
+|                                                                        │
 │                                   │                                    │
 │  1. Job: DeployStaging ───────────┼───► 04-reusable-cd.yml             │
 │                                   │     (environment: staging)         │
