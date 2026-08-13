@@ -27,7 +27,7 @@ We need to validate a Python application against multiple runtime versions (`3.1
 │                     Matrix Execution (4 Jobs)                          │
 │                                                                        │
 │  [Python 3.10 / Staging] ───┐                                          │
-│  [Python 3.10 / Prod]    ───┼──► Local Postgres Container (Port 5432)   │
+│  [Python 3.10 / Prod]    ───┼──► Local Postgres Container (Port 5432)  │
 │  [Python 3.11 / Staging] ───┤           │                              │
 │  [Python 3.11 / Prod]    ───┘           ▼                              │
 │                                Execute App & Persistence               │
@@ -51,7 +51,7 @@ Instead of exchanging fixed secrets, the GitHub runner requests a short-lived JS
 │                                                                        │
 │  1. Runner ──► Request OIDC Token ──► GitHub OIDC Provider             │
 │  2. GitHub OIDC ──► Issues Signed JWT Token ──► Runner                 │
-│  3. Runner ──► Present JWT to AWS STS (AssumeRoleWithWebIdentity)     │
+│  3. Runner ──► Present JWT to AWS STS (AssumeRoleWithWebIdentity)      │
 │  4. AWS STS ──► Validates JWT with IAM Trust Policy                    │
 │  5. AWS STS ──► Issues Temporary Security Credentials ──► Runner       │
 └────────────────────────────────────────────────────────────────────────┘
