@@ -1,0 +1,23 @@
+{
+    "yaml.disableSchemaDetection": [
+        "**/.github/workflows/*.yml",
+        "**/.github/workflows/*.yaml",
+        "**/.gitea/workflows/*.yml",
+        "**/.gitea/workflows/*.yaml",
+        "**/.forgejo/workflows/*.yml",
+        "**/.forgejo/workflows/*.yaml",
+        "file:///Users/marianonamoroso/Documents/08%20-%20Studies/9%20-%20Pipeline/github-actions-mastery/.github/actions/iac-security-check/action.yml"
+    ],
+    "yaml.schemas": {
+        "https://json.schemastore.org/github-workflow.json": "/.github/workflows/*",
+        "https://json.schemastore.org/github-action.json": [
+            "**/action.yml",
+            "**/action.yaml"
+        ],
+        "https://raw.githubusercontent.com/typesafegithub/github-actions-typing/refs/heads/schema-latest/github-actions-typing.schema.json": "file:///Users/marianonamoroso/Documents/08%20-%20Studies/9%20-%20Pipeline/github-actions-mastery/.github/actions/iac-security-check/action.yml",
+        "https://www.schemastore.org/github-workflow.json": [
+            "file:///Users/marianonamoroso/Documents/08%20-%20Studies/9%20-%20Pipeline/github-actions-mastery/.github/workflows/05-concurrency-matrix.yml",
+            "file:///Users/marianonamoroso/Documents/08%20-%20Studies/9%20-%20Pipeline/github-actions-mastery/.github/workflows/06-workflow-codeql.yml"
+        ]
+    }
+}

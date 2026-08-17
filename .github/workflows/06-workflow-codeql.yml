@@ -1,0 +1,19 @@
+name: "06 - CodeQL"
+
+on: 
+    workflow_dispatch:
+    push:
+        branches:
+            - main
+    
+
+jobs:
+    CodeQL:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: "Checkout repository"
+              uses: actions/checkout@v4
+
+
+

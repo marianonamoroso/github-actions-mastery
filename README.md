@@ -144,3 +144,52 @@ High-frequency commit pushes or manual triggers often lead to redundant, overlap
 │                       └───────────────────────┴──────────────────────┘ │
 └────────────────────────────────────────────────────────────────────────┘
 ```
+
+---
+
+## 🛠️ Local Developer Experience & IDE Setup
+
+To enable native **IntelliSense, syntax validation, and JSON Schema autocompletion** for both Workflows and Composite Actions in VS Code:
+
+### 1. Recommended Extensions
+
+* **GitHub Actions** (`github.vscode-github-actions`) — Official GitHub extension.
+* **YAML** (`redhat.vscode-yaml`) — Red Hat schema validation engine.
+
+### 2. VS Code Configuration (`.vscode/settings.json`)
+
+Ensure proper file associations and schema binding to prevent generic YAML fallback:
+
+```json
+{
+  "files.associations": {
+    "**/.github/workflows/*.yml": "github-actions-workflow",
+    "**/.github/workflows/*.yaml": "github-actions-workflow",
+    "**/.github/actions/**/action.yml": "github-actions-workflow",
+    "**/.github/actions/**/action.yaml": "github-actions-workflow"
+  },
+  "yaml.schemas": {
+    "[https://json.schemastore.org/github-workflow.json](https://json.schemastore.org/github-workflow.json)": [
+      "**/.github/workflows/*.yml",
+      "**/.github/workflows/*.yaml"
+    ],
+    "[https://json.schemastore.org/github-action.json](https://json.schemastore.org/github-action.json)": [
+      "**/action.yml",
+      "**/action.yaml"
+    ]
+  },
+  "yaml.validate": true,
+  "yaml.completion": true
+}
+```
+
+### 3. VS Code Configuration (`keybindings.json`)
+
+```json
+[
+  {
+    "key": "alt+space",
+    "command": "editor.action.triggerSuggest",
+    "when": "editorHasCompletionItemProvider && textInputFocus && !editorReadonly && !suggestWidgetVisible"
+  }
+]
