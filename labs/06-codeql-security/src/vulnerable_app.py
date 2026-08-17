@@ -1,17 +1,24 @@
-import sqlite3
 import os
+import sqlite3
+from flask import Flask, request
 
-def get_user_data(user_id):
-    # ❌ VULNERABILIDAD INTENCIONAL (SQL Injection) para el scan de CodeQL
+app = Flask(__name__)
+
+@app.route("/user")
+def get_user():
+    # Source: Entrada del usuario
+    username = request.args.get("username")
+    
+    # Sink 1: SQL Injection clásico (CWE-89)
     conn = sqlite3.connect("users.db")
     cursor = conn.cursor()
-    query = f"SELECT * FROM users WHERE id = '{user_id}'"
+    query = f"SELECT * FROM users WHERE username = '{username}'"
     cursor.execute(query)
-    return cursor.fetchall()
-
-def execute_system_command(command):
-    # ❌ VULNERABILIDAD INTENCIONAL (Command Injection)
-    os.system(f"echo Executing: {command}")
+    
+    # Sink 2: Command Injection (CWE-78)
+    os.system(f"echo Query executed for: {username}")
+    
+    return "User query processed"
 
 if __name__ == "__main__":
-    print("Vulnerable application test harness ready.")
+    app.run(port=5000)
