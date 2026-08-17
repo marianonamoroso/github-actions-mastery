@@ -17,15 +17,15 @@ jobs:
         runs-on: ubuntu-latest
 
         steps:
-            - name: "Checkout repository"
+            - name: "Checkout Repository"
               uses: actions/checkout@v4
             
-            - name: ""
+            - name: "Initialize CodeQL"
               uses: github/codeql-action/init@v3
               with:
                 languages: 'python'
 
-            - name: ""
+            - name: "Perform CodeQL Analysis"
               uses: github/codeql-action/analyze@v3
               with:
                 category: "/language:python"
