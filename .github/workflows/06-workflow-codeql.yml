@@ -1,3 +1,10 @@
+# ==============================================================================
+# Workflow: 06 - Security Scan (CodeQL)
+# Description: Automated SAST (Static Application Security Testing) pipeline
+#              using GitHub CodeQL engine to detect AST/taint-flow vulnerabilities.
+# Permissions: Least Privilege model (security-events: write for SARIF upload).
+# ==============================================================================
+
 name: "06 - Security Scan (CodeQL)"
 
 on: 

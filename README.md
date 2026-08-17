@@ -14,6 +14,7 @@ This repository serves as a hands-on technical portfolio and study guide for the
 | **03** | **Custom Composite Action (IaC Security & Quality)** *(Domain 1 & 4)* | Composite Actions (`action.yml`), TFLint, Trivy SAST, Centralized `env`/`vars`, Artifact Retention | [Workflow](.github/workflows/03-workflow-scan.yml) \| [Labs](labs/03-iac-security-check/) |
 | **04** | **Reusable Workflows & CD Environments** *(Domain 1, 2 & 3)* | `workflow_call`, Caller vs Callable, `secrets: inherit`, GitHub Environments & Manual Protection Rules | [Workflow Invocador](.github/workflows/04-workflow-cd-pipeline.yml) \| [Reusable](.github/workflows/04-reusable-cd.yml) \| [Lab](labs/04-reusable-cd/) |
 | **05** | **Concurrency Controls, Dynamic Matrix & Self-Hosted** *(Domain 1 & 2)* | Workflow Cancellation (`cancel-in-progress`), Resilient Matrix (`fail-fast: false`), Multi-OS Targets, Self-Hosted Architecture | [Workflow](.github/workflows/05-concurrency-matrix.yml) \| [Lab](labs/05-concurrency-matrix/) |
+| **`06-workflow-codeql.yml`** | SAST, Taint Analysis, SARIF Reports | GitHub CodeQL (`init`, `analyze`), Least Privilege permissions |
 
 ---
 
@@ -143,6 +144,40 @@ High-frequency commit pushes or manual triggers often lead to redundant, overlap
 │                       ├───────────────────────┼──────────────────────┤ │
 │                       │  Windows + Py 3.11    │ [Win + 3.10 Excluded]│ │
 │                       └───────────────────────┴──────────────────────┘ │
+└────────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## 06 - SAST & Security Scanning with GitHub CodeQL
+
+### 🎯 Business Challenge (LAB06)
+
+Traditional regex-based security linters produce high false-positive rates and fail to understand contextual data flows across application layers. To prevent critical security flaws (such as SQL Injections and Command Injections) from reaching production, we need an automated **Static Application Security Testing (SAST)** engine embedded directly into the CI/CD lifecycle. This pipeline must perform semantic taint tracking, adhere to the Least Privilege model, and ingest structured SARIF reports directly into the GitHub Security dashboard without relying on third-party SaaS platforms.
+
+### 🛠️ Workflow Architecture (LAB06)
+
+The pipeline checks out the codebase with read-only permissions, initializes the CodeQL semantic database using extended security query suites (`security-extended,security-and-quality`), and evaluates execution paths from user-controlled inputs (*sources*) to execution methods (*sinks*). Results are formatted into a standard SARIF payload and pushed to GitHub Advanced Security via `security-events: write`.
+
+```text
+┌────────────────────────────────────────────────────────────────────────┐
+│                        CodeQL SAST Pipeline                            │
+│                                                                        │
+│  1. Checkout Code (contents: read)                                     │
+│            │                                                           │
+│            ▼                                                           │
+│  2. CodeQL Init (github/codeql-action/init@v3)                         │
+│     ├─ Target: Python AST & Data Flow Graph                            │
+│     └─ Suites: security-extended, security-and-quality                 │
+│            │                                                           │
+│            ▼                                                           │
+│  3. CodeQL Analyze (github/codeql-action/analyze@v3)                   │
+│     ├─ Taint Tracking (Source ──► Sanitizer ──► Sink)                  │
+│     └─ Generates SARIF Report (CWE-89 SQLi, CWE-78 RCE)                │
+│            │                                                           │
+│            ▼                                                           │
+│  4. Publish to GitHub Security Tab (security-events: write)            │
+│     └─ Updates "Code scanning alerts" Dashboard                        │
 └────────────────────────────────────────────────────────────────────────┘
 ```
 
