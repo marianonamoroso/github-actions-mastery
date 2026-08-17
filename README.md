@@ -2,6 +2,7 @@
 
 This repository serves as a hands-on technical portfolio and study guide for the **GitHub Actions Certification (GH-200)**. It covers production-ready CI/CD patterns, DevSecOps practices, and workflow architectures.
 
+> 💡 **Local Developer Tip:** To enable native IntelliSense, syntax validation, and JSON schemas in VS Code, check the [IDE Configuration](#️-local-developer-experience--ide-setup) section.
 ---
 
 ## 📚 Table of Contents & Learning Path
