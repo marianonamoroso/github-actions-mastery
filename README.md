@@ -14,7 +14,7 @@ This repository serves as a hands-on technical portfolio and study guide for the
 | **03** | **Custom Composite Action (IaC Security & Quality)** *(Domain 1 & 4)* | Composite Actions (`action.yml`), TFLint, Trivy SAST, Centralized `env`/`vars`, Artifact Retention | [Workflow](.github/workflows/03-workflow-scan.yml) \| [Labs](labs/03-iac-security-check/) |
 | **04** | **Reusable Workflows & CD Environments** *(Domain 1, 2 & 3)* | `workflow_call`, Caller vs Callable, `secrets: inherit`, GitHub Environments & Manual Protection Rules | [Workflow Invocador](.github/workflows/04-workflow-cd-pipeline.yml) \| [Reusable](.github/workflows/04-reusable-cd.yml) \| [Lab](labs/04-reusable-cd/) |
 | **05** | **Concurrency Controls, Dynamic Matrix & Self-Hosted** *(Domain 1 & 2)* | Workflow Cancellation (`cancel-in-progress`), Resilient Matrix (`fail-fast: false`), Multi-OS Targets, Self-Hosted Architecture | [Workflow](.github/workflows/05-concurrency-matrix.yml) \| [Lab](labs/05-concurrency-matrix/) |
-| **`06-workflow-codeql.yml`** | SAST, Taint Analysis, SARIF Reports | GitHub CodeQL (`init`, `analyze`), Least Privilege permissions |
+| **06** | **SAST & Security Scanning with CodeQL** *(Domain 2 & 4)* | AST & Taint Tracking, Least Privilege (`security-events: write`), SARIF Upload, Advanced Security Dashboard | [Workflow](.github/workflows/06-workflow-codeql.yml) \| [Lab](labs/06-codeql-security/) |
 
 ---
 
