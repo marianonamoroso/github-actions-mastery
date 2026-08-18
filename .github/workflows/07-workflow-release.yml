@@ -1,0 +1,80 @@
+# ==============================================================================
+# Workflow: 07 - Automated Release & Artifact Packaging
+# Description: Generates SemVer tags, creates GitHub Releases using gh CLI,
+#              and attaches bundled tar.gz production assets.
+# Permissions: Least Privilege (contents: write for tag/release creation).
+# ==============================================================================
+
+name: "07 - Release Management"
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_type:
+        description: 'Release Type Bump'
+        required: true
+        default: 'patch'
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-release:
+    name: Package & Publish Release
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Getting tag history
+
+      - name: Determine Next Version
+        id: semver
+        run: |
+          LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
+          echo "Latest tag found: $LATEST_TAG"
+          
+          VERSION=${LATEST_TAG#v}
+          IFS='.' read -r MAJOR MINOR PATCH <<< "$VERSION"
+          
+          case "${{ github.event.inputs.release_type }}" in
+            major)
+              MAJOR=$((MAJOR + 1))
+              MINOR=0
+              PATCH=0
+              ;;
+            minor)
+              MINOR=$((MINOR + 1))
+              PATCH=0
+              ;;
+            patch)
+              PATCH=$((PATCH + 1))
+              ;;
+          esac
+          
+          NEW_TAG="v${MAJOR}.${MINOR}.${PATCH}"
+          echo "Computed new tag: $NEW_TAG"
+          echo "new_tag=$NEW_TAG" >> "$GITHUB_OUTPUT"
+
+      - name: Build & Package Distribution Asset
+        run: |
+          mkdir -p dist
+          tar -czf dist/app-${{ steps.semver.outputs.new_tag }}.tar.gz -C labs/07-release-management/src .
+          ls -la dist/
+
+      - name: Generate Changelog & Create GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG_NAME: ${{ steps.semver.outputs.new_tag }}
+        run: |
+          gh release create "$TAG_NAME" \
+            dist/app-"$TAG_NAME".tar.gz \
+            --title "Release $TAG_NAME" \
+            --generate-notes \
+            --target "$GITHUB_SHA"
