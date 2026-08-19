@@ -15,6 +15,7 @@ This repository serves as a hands-on technical portfolio and study guide for the
 | **04** | **Reusable Workflows & CD Environments** *(Domain 1, 2 & 3)* | `workflow_call`, Caller vs Callable, `secrets: inherit`, GitHub Environments & Manual Protection Rules | [Caller Workflow](.github/workflows/04-workflow-cd-pipeline.yml) \| [Reusable Workflow](.github/workflows/04-reusable-cd.yml) \| [Lab](labs/04-reusable-workflow/) |
 | **05** | **Concurrency Controls, Dynamic Matrix & Self-Hosted** *(Domain 1 & 2)* | Workflow Cancellation (`cancel-in-progress`), Resilient Matrix (`fail-fast: false`), Multi-OS Targets, Self-Hosted Architecture | [Workflow](.github/workflows/05-concurrency-matrix.yml) \| [Lab](labs/05-concurrency-matrix/) |
 | **06** | **SAST & Security Scanning with CodeQL** *(Domain 2 & 4)* | AST & Taint Tracking, Least Privilege (`security-events: write`), SARIF Upload, Advanced Security Dashboard | [Workflow](.github/workflows/06-workflow-codeql.yml) \| [Lab](labs/06-codeql-security/) |
+| **07** | **Dynamic Release Management & Auto-tagging** *(Domain 1 & 4)* | SemVer Calculation, `$GITHUB_OUTPUT`, GitHub CLI (`gh`), `contents: write`, Asset Packaging | [Workflow](.github/workflows/07-workflow-release.yml) \| [Lab](labs/07-release-management/) |
 
 ---
 
@@ -183,6 +184,37 @@ The pipeline checks out the codebase with read-only permissions, initializes the
 
 ---
 
+## 07 - Dynamic Release Management & Auto-tagging
+
+### 🎯 Business Challenge (LAB07)
+
+Manual release processes are error-prone, lack consistent changelogs, and detach compiled assets from their source code tags. To streamline continuous delivery, we need an automated pipeline that dynamically calculates Semantic Versioning (SemVer), packages the application into production-ready distribution assets, and publishes a formal GitHub Release with automated notes—ensuring every deployment artifact is strictly tied to an immutable Git milestone.
+
+### 🛠️ Workflow Architecture (LAB07)
+
+The workflow relies on `workflow_dispatch` inputs to determine the version bump. It leverages `$GITHUB_OUTPUT` to pass the computed tag across isolated steps and uses the native GitHub CLI (`gh`) to securely interact with the platform API, requiring elevated `contents: write` permissions.
+
+```text
+┌────────────────────────────────────────────────────────────────────────┐
+│                        Release Management Pipeline                     │
+│                                                                        │
+│  1. Manual Trigger (workflow_dispatch: patch/minor/major)              │
+│            │                                                           │
+│            ▼                                                           │
+│  2. Calculate SemVer (Bash script + git describe)                      │
+│     └─► Outputs: $GITHUB_OUTPUT (new_tag=v1.2.0)                       │
+│            │                                                           │
+│            ▼                                                           │
+│  3. Package Asset (tar -czf app-v1.2.0.tar.gz)                         │
+│     └─► Consumes: steps.semver.outputs.new_tag                         │
+│            │                                                           │
+│            ▼                                                           │
+│  4. Publish GitHub Release (gh CLI via GITHUB_TOKEN)                   │
+│     ├─ Push Tag: v1.2.0 (contents: write)                              │
+│     ├─ Generate automated release notes                                │
+│     └─ Upload Asset: app-v1.2.0.tar.gz                                 │
+└────────────────────────────────────────────────────────────────────────┘
+
 ## 🛠️ Local Developer Experience & IDE Setup
 
 To enable native **IntelliSense, syntax validation, and JSON Schema autocompletion** for both Workflows and Composite Actions in VS Code:
@@ -218,6 +250,8 @@ Ensure proper file associations and schema binding to prevent generic YAML fallb
   "yaml.completion": true
 }
 ```
+
+---
 
 ### 3. VS Code Configuration (`keybindings.json`)
 
