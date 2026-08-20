@@ -1,0 +1,59 @@
+# ==============================================================================
+# Workflow: 08 - Security Hardening & Secret Masking
+# Description: Demonstrates run-time secret masking, Script Injection mitigations,
+#              and supply chain immutability (Action SHA Pinning).
+# Permissions: Zero-Trust baseline (contents: read only).
+# ==============================================================================
+
+name: "08 - Security Hardening"
+
+on:
+  workflow_dispatch:
+    inputs:
+      user_input:
+        description: "Untrusted string input (Simulate payload)"
+        required: true
+        default: 'valid-input"; echo "INJECTED_CMD: $(whoami)" #'
+
+permissions:
+  contents: read
+
+jobs:
+  hardening-audit:
+    name: Security Controls Verification
+    runs-on: ubuntu-latest
+
+    steps:
+      # Pinning por Full SHA inmutable (actions/checkout@v4.1.7)
+      - name: Checkout repository (Pinned SHA)
+        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332
+
+      # Control 1: Dynamic Secret Masking (Workflow Command)
+      - name: Generate and Mask Ephemeral Secret
+        id: secret_gen
+        run: |
+          # Simulación: se genera un token sensible dinámico
+          GENERATED_TOKEN="token_super_secreto_$(date +%s)"
+          
+          # Registro del valor en el motor de GitHub Actions para masking inmediato
+          echo "::add-mask::$GENERATED_TOKEN"
+          
+          # Almacenar en output de forma segura
+          echo "masked_token=$GENERATED_TOKEN" >> "$GITHUB_OUTPUT"
+
+      - name: Verify Secret Masking in Logs
+        run: |
+          # Aunque se imprima de forma explícita, el runner reemplazará el valor por ***
+          echo "Attempting to print token: ${{ steps.secret_gen.outputs.masked_token }}"
+
+      # Control 2: Script Injection Mitigation (Environment Variable Binding)
+      # VULNERABLE APPROACH (Do NOT use):
+      # run: echo "Input was: ${{ github.event.inputs.user_input }}"
+      #
+      # SECURE APPROACH: Transfer via env context to prevent shell interpolation attacks
+      - name: Process Untrusted Input Securely
+        env:
+          RAW_USER_INPUT: ${{ github.event.inputs.user_input }}
+        run: |
+          echo "Safely printing input via system environment variable:"
+          echo "$RAW_USER_INPUT"
