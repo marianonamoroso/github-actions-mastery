@@ -214,6 +214,7 @@ The workflow relies on `workflow_dispatch` inputs to determine the version bump.
 │     ├─ Generate automated release notes                                │
 │     └─ Upload Asset: app-v1.2.0.tar.gz                                 │
 └────────────────────────────────────────────────────────────────────────┘
+```
 
 ## 🛠️ Local Developer Experience & IDE Setup
 
