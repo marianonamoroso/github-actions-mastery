@@ -16,6 +16,7 @@ This repository serves as a hands-on technical portfolio and study guide for the
 | **05** | **Concurrency Controls, Dynamic Matrix & Self-Hosted** *(Domain 1 & 2)* | Workflow Cancellation (`cancel-in-progress`), Resilient Matrix (`fail-fast: false`), Multi-OS Targets, Self-Hosted Architecture | [Workflow](.github/workflows/05-concurrency-matrix.yml) \| [Lab](labs/05-concurrency-matrix/) |
 | **06** | **SAST & Security Scanning with CodeQL** *(Domain 2 & 4)* | AST & Taint Tracking, Least Privilege (`security-events: write`), SARIF Upload, Advanced Security Dashboard | [Workflow](.github/workflows/06-workflow-codeql.yml) \| [Lab](labs/06-codeql-security/) |
 | **07** | **Dynamic Release Management & Auto-tagging** *(Domain 1 & 4)* | SemVer Calculation, `$GITHUB_OUTPUT`, GitHub CLI (`gh`), `contents: write`, Asset Packaging | [Workflow](.github/workflows/07-workflow-release.yml) \| [Lab](labs/07-release-management/) |
+| **08** | **Security Hardening & Supply Chain Protection** *(Domain 2 & 4)* | `::add-mask::`, Script Injection Mitigation, Action SHA Pinning, Immutable Supply Chain | [Workflow](.github/workflows/08-workflow-hardening.yml) \| [Lab](labs/08-security-hardening/) |
 
 ---
 
@@ -213,6 +214,37 @@ The workflow relies on `workflow_dispatch` inputs to determine the version bump.
 │     ├─ Push Tag: v1.2.0 (contents: write)                              │
 │     ├─ Generate automated release notes                                │
 │     └─ Upload Asset: app-v1.2.0.tar.gz                                 │
+└────────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## 08 - Enterprise Security Hardening & Supply Chain Protection
+
+### 🎯 Business Challenge (LAB08)
+
+Dynamic CI/CD workflows frequently process untrusted input and handle ephemeral credentials generated at runtime. Using mutable action tags exposes pipelines to supply chain hijacking, while direct context interpolation in shell blocks enables Script Injection (RCE). We need to enforce strict enterprise hardening: cryptographic Action Pinning, dynamic runtime secret masking, and safe environment variable binding.
+
+### 🛠️ Workflow Architecture (LAB08)
+
+The workflow demonstrates defense-in-depth: pinning actions by immutable 40-character SHAs, sanitizing the log output buffer using the workflow command `::add-mask::`, and passing untrusted inputs strictly via OS environment variables to prevent command execution.
+
+```text
+┌────────────────────────────────────────────────────────────────────────┐
+│                        Hardened Security Pipeline                      │
+│                                                                        │
+│  1. Checkout Code ──► Immutable Action Pinning (Commit SHA)            │
+│            │                                                           │
+│            ▼                                                           │
+│  2. Generate Dynamic Secret ──► echo "::add-mask::$TOKEN"              │
+│     └─► Runner Redaction Engine captures pattern                       │
+│            │                                                           │
+│            ▼                                                           │
+│  3. Standard Output Log ──► Intercepted & Replaced with "***"          │
+│            │                                                           │
+│            ▼                                                           │
+│  4. Untrusted Payload ($INPUT) ──► Bound to System Env ($RAW_INPUT)    │
+│     └─► Bash processes literal data string (No Shell Execution)        │
 └────────────────────────────────────────────────────────────────────────┘
 ```
 
