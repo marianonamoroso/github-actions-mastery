@@ -1,0 +1,26 @@
+# ==============================================================================
+# Architecture Reference: Actions Runner Controller (ARC) Autoscaling
+# Kubernetes CRD: AutoscalingRunnerSet / RunnerDeployment
+# ==============================================================================
+apiVersion: actions.github.com/v1alpha1
+kind: AutoscalingRunnerSet
+metadata:
+  name: arc-k8s-runner-set
+  namespace: arc-runners
+spec:
+  githubConfigUrl: "https://github.com/marianonamoroso" # Org or Repo level
+  minRunners: 1
+  maxRunners: 10
+  template:
+    spec:
+      containers:
+        - name: runner
+          image: ghcr.io/actions/actions-runner:latest
+          command: ["/home/runner/run.sh"]
+          resources:
+            limits:
+              cpu: "2"
+              memory: 4Gi
+            requests:
+              cpu: "1"
+              memory: 2Gi

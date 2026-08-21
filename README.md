@@ -17,6 +17,7 @@ This repository serves as a hands-on technical portfolio and study guide for the
 | **06** | **SAST & Security Scanning with CodeQL** *(Domain 2 & 4)* | AST & Taint Tracking, Least Privilege (`security-events: write`), SARIF Upload, Advanced Security Dashboard | [Workflow](.github/workflows/06-workflow-codeql.yml) \| [Lab](labs/06-codeql-security/) |
 | **07** | **Dynamic Release Management & Auto-tagging** *(Domain 1 & 4)* | SemVer Calculation, `$GITHUB_OUTPUT`, GitHub CLI (`gh`), `contents: write`, Asset Packaging | [Workflow](.github/workflows/07-workflow-release.yml) \| [Lab](labs/07-release-management/) |
 | **08** | **Security Hardening & Supply Chain Protection** *(Domain 2 & 4)* | `::add-mask::`, Script Injection Mitigation, Action SHA Pinning, Immutable Supply Chain | [Workflow](.github/workflows/08-workflow-hardening.yml) \| [Lab](labs/08-security-hardening/) |
+| **09** | **Runner Governance, ARC & Enterprise Policies** *(Domain 2 & 3)* | Self-Hosted Runners, ARC on K8s, Ephemeral Lifecycles, `runner.*` Context, Runner Groups | [Workflow](.github/workflows/09-workflow-governance.yml) \| [Lab](labs/09-runner-governance/) |
 
 ---
 
@@ -245,6 +246,38 @@ The workflow demonstrates defense-in-depth: pinning actions by immutable 40-char
 │            ▼                                                           │
 │  4. Untrusted Payload ($INPUT) ──► Bound to System Env ($RAW_INPUT)    │
 │     └─► Bash processes literal data string (No Shell Execution)        │
+└────────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## 09 - Runner Governance, Autoscaling (ARC) & Enterprise Policies
+
+### 🎯 Business Challenge (LAB09)
+
+Static self-hosted runner virtual machines suffer from configuration drift, persistent state pollution, high idle cloud costs, and severe security risks if shared across untrusted repositories. To maintain enterprise compliance and security isolation, we need an automated strategy utilizing Kubernetes-native Autoscaling Runner Controller (ARC) for ephemeral runner provisioning, combined with strict organizational runner group boundaries and context-driven audit policies.
+
+### 🛠️ Workflow Architecture (LAB09)
+
+The workflow dynamically evaluates target execution environments, inspects runner host metadata via the `runner.*` context object, and enforces governance boundaries for ephemeral container workloads.
+
+```text
+┌────────────────────────────────────────────────────────────────────────┐
+│                     Runner Governance Architecture                     │
+│                                                                        │
+│  1. Dynamic Target Selection (workflow_dispatch / labels)              │
+│            │                                                           │
+│            ▼                                                           │
+│  2. Ephemeral Compute Provisioning (K8s ARC / GitHub-Hosted)           │
+│     └─ Single-Job Execution (Zero Persistent State)                    │
+│            │                                                           │
+│            ▼                                                           │
+│  3. Runner Context Inspection (runner.os, runner.arch, runner.name)   │
+│     └─ Runtime Verification of Environment Compliance                  │
+│            │                                                           │
+│            ▼                                                           │
+│  4. Job Execution & Auto-Teardown                                      │
+│     └─ Immediate destruction of runner compute host                    │
 └────────────────────────────────────────────────────────────────────────┘
 ```
 

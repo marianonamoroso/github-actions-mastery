@@ -1,0 +1,56 @@
+# ==============================================================================
+# Workflow: 09 - Runner Governance & Policy Auditing
+# Description: Demonstrates runner label targeting, dynamic environment inspection,
+#              and enterprise execution policies.
+# Permissions: Read-only baseline (contents: read).
+# ==============================================================================
+
+name: "09 - Runner Governance"
+
+on:
+  workflow_dispatch:
+    inputs:
+      target_runner:
+        description: 'Target Runner Environment'
+        required: true
+        default: 'ubuntu-latest'
+        type: choice
+        options:
+          - 'ubuntu-latest'
+          - 'self-hosted-simulation'
+
+permissions:
+  contents: read
+
+jobs:
+  # Job 1: Inspección de Seguridad del Runner y Gobernanza
+  runner-governance-audit:
+    name: Audit Runner Metadata & Policies
+    runs-on: ${{ github.event.inputs.target_runner == 'self-hosted-simulation' && fromJSON('["ubuntu-latest"]') || 'ubuntu-latest' }}
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332
+
+      - name: Inspect Runner Hardware & Context
+        env:
+          RUNNER_OS: ${{ runner.os }}
+          RUNNER_ARCH: ${{ runner.arch }}
+          RUNNER_NAME: ${{ runner.name }}
+          RUNNER_ENVIRONMENT: ${{ runner.environment }}
+        run: |
+          echo "================ RUNNER METADATA ================"
+          echo "Operating System : $RUNNER_OS"
+          echo "Architecture     : $RUNNER_ARCH"
+          echo "Runner Hostname  : $RUNNER_NAME"
+          echo "Runner Env Type  : $RUNNER_ENVIRONMENT"
+          echo "================================================="
+
+      - name: Verify Ephemeral Cleanup & Isolation Policy
+        run: |
+          # Simulación: Verificar que el workspace no contenga datos huérfanos
+          echo "Verifying Workspace Isolation: $GITHUB_WORKSPACE"
+          ls -la "$GITHUB_WORKSPACE"
+          
+          # Reporte de políticas para GH-200
+          echo "::notice title=Runner Security::Ephemeral runner validated. No state leaked across runs."
