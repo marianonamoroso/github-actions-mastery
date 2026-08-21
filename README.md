@@ -248,7 +248,7 @@ The workflow demonstrates defense-in-depth: pinning actions by immutable 40-char
 │     └─► Bash processes literal data string (No Shell Execution)        │
 └────────────────────────────────────────────────────────────────────────┘
 ```
-
+g
 ---
 
 ## 09 - Runner Governance, Autoscaling (ARC) & Enterprise Policies
